@@ -6,6 +6,11 @@ from pydantic import BaseModel
 from google import genai
 from google.genai import types
 
+# --- ÉP ĐỊNH DẠNG UTF-8 CHO TERMINAL ---
+sys.stdout.reconfigure(encoding='utf-8')
+sys.stderr.reconfigure(encoding='utf-8')
+# ---------------------------------------
+
 # 1. Khởi tạo ứng dụng FastAPI
 # --- THÊM 2 DÒNG NÀY ---
 from dotenv import load_dotenv
@@ -62,18 +67,24 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     reply: str
 
-
 # 5. Mở cổng API để phần cứng gọi tới
 @app.post("/api/chat", response_model=ChatResponse)
-async def chat_endpoint(request: ChatRequest):
+def chat_endpoint(request: ChatRequest): # <--- Đã xóa chữ 'async'
     try:
+        # Tự tin mở lại lệnh print
         print(f"Nhận từ phần cứng: {request.message}")
 
-        # Gửi nội dung tới Gemini (Gemini sẽ tự động gọi calculate nếu cần)
+        # Gửi nội dung tới Gemini
         response = chat_session.send_message(request.message)
 
+        # Tự tin mở lại lệnh print
         print(f"Trả về phần cứng: {response.text}")
         return ChatResponse(reply=response.text)
 
     except Exception as e:
+        # In lỗi ra màn hình đen để dễ sửa nếu có vấn đề
+        import traceback
+        print("\n=== LỖI CHI TIẾT ===")
+        traceback.print_exc()
+        print("====================\n")
         raise HTTPException(status_code=500, detail=str(e))
