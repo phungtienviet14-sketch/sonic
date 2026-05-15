@@ -7,6 +7,10 @@ from google import genai
 from google.genai import types
 
 # 1. Khởi tạo ứng dụng FastAPI
+# --- THÊM 2 DÒNG NÀY ---
+from dotenv import load_dotenv
+load_dotenv()
+# -----------------------
 app = FastAPI(title="Robot Teacher Brain API")
 
 # Lấy API Key từ biến môi trường (AWS)
